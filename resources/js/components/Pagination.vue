@@ -42,16 +42,16 @@ export default {
     },
     pages() {
       const pagesArray = [];
-      const range = 5; // Number of page links to show around the current page
+      const range = 6;
 
       for (let i = Math.max(1, this.currentPage - range); i <= Math.min(this.totalPages, this.currentPage + range); i++) {
         pagesArray.push(i);
       }
 
-      // Add ellipsis if needed
-      if (this.currentPage > range + 1) {
+      if (this.currentPage > range) {
         pagesArray.unshift('...');
       }
+
       if (this.totalPages > this.currentPage + range) {
         pagesArray.push('...');
       }
