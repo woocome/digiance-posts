@@ -66,7 +66,7 @@ export default {
         this.abortController = new AbortController();
         const signal = this.abortController.signal;
 
-        this.loading = true; // Set loading to true before fetching
+        this.loading = true;
 
         const response = await fnApi.call(`/posts?page=${page}`, 'GET', {search: this.searchQuery}, signal);
         this.posts = response.data;

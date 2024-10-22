@@ -28,7 +28,7 @@ class PostsController extends Controller
             $query = Post::query();
             $query->where('title', 'like', '%' . $searchTerm . '%'); // Search by title
 
-            // Paginate the results (10 posts per page)
+            // Paginate the results (# posts per page)
             $paginatedPosts = $query->paginate(perPage: $perPage, page: $currentPage);
         } else {
             // Check if the posts are cached
