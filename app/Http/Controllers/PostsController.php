@@ -23,33 +23,20 @@ class PostsController extends Controller
         // Get pagination parameters
         $perPage = $request->input('size', 12);
         $currentPage = $request->input('page', 1);
+        $searchTerm = $request->input('search'); // Search term if provided
 
-        if ($searchTerm = $request->input('search')) {
+        $cacheKey = 'posts_page_' . $currentPage . '_size_' . $perPage . '_search_' . ($searchTerm ?: 'all');
+    
+        $paginatedPosts = Cache::remember($cacheKey, 60, function () use ($searchTerm, $perPage, $currentPage) {
             $query = Post::query();
-            $query->where('title', 'like', '%' . $searchTerm . '%'); // Search by title
+    
+            if ($searchTerm) {
+                $query->where('title', 'like', '%' . $searchTerm . '%');
+            }
 
-            // Paginate the results (# posts per page)
-            $paginatedPosts = $query->paginate(perPage: $perPage, page: $currentPage);
-        } else {
-            // Check if the posts are cached
-            $posts = Cache::get('posts');
+            return $query->paginate(perPage: $perPage, page: $currentPage);
+        });
 
-             if (!$posts) {
-                // If not cached, retrieve from database
-                $posts = PostResource::collection(Post::all());
-             }
-
-            // Paginate the filtered results
-            $currentPageItems = $posts->slice(($currentPage - 1) * $perPage, $perPage)->all();
-            $paginatedPosts = new LengthAwarePaginator(
-                $currentPageItems,
-                $posts->count(),
-                $perPage,
-                $currentPage
-            );
-        }
-
-        // Return the paginated posts as a resource collection
         return PostResource::collection($paginatedPosts);
     }
 

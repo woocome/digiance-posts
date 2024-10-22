@@ -42,18 +42,35 @@ export default {
     },
     pages() {
       const pagesArray = [];
-      const range = 6;
+      const totalPages = this.totalPages;
+      const currentPage = this.currentPage;
+      const range = 3; // Adjust the range to control how many pages are shown around the current page
+      
+      // Always show the first page
+      pagesArray.push(1);
 
-      for (let i = Math.max(1, this.currentPage - range); i <= Math.min(this.totalPages, this.currentPage + range); i++) {
+      // Add ellipsis if the current page is far from the first page
+      if (currentPage > range + 2) {
+        pagesArray.push('...');
+      }
+
+      // Calculate the range of pages around the current page
+      const startPage = Math.max(2, currentPage - range);
+      const endPage = Math.min(totalPages - 1, currentPage + range);
+
+      // Add pages around the current page
+      for (let i = startPage; i <= endPage; i++) {
         pagesArray.push(i);
       }
 
-      if (this.currentPage > range) {
-        pagesArray.unshift('...');
+      // Add ellipsis if the current page is far from the last page
+      if (currentPage < totalPages - range - 1) {
+        pagesArray.push('...');
       }
 
-      if (this.totalPages > this.currentPage + range) {
-        pagesArray.push('...');
+      // Always show the last page if it’s greater than 1
+      if (totalPages > 1) {
+        pagesArray.push(totalPages);
       }
 
       return pagesArray;

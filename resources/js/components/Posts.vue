@@ -10,7 +10,7 @@
       />
     </div>
 
-    <div class="row g-3">
+    <div class="row g-3" v-if="!loading">
       <div v-for="post in posts" :key="post.id" class="col-12 col-sm-6 col-lg-4" v-if="posts.length">
         <div class="card p-2 h-100">
           <h2>{{ post.title }}</h2>
