@@ -24,6 +24,8 @@ class FetchPostsFromAPI extends Command
         if ($response->successful()) {
             $posts = $response->json();
 
+            Cache::flush();
+
             foreach ($posts as $postData) {
                 $request = new PostRequest();
                 $validator = Validator::make($postData, $request->rules());
@@ -45,7 +47,7 @@ class FetchPostsFromAPI extends Command
             }
 
             // Cache the posts for 60 minutes
-            Cache::put('posts', PostResource::collection(Post::all()), 60);
+            // Cache::put('posts', Post::all(), 60);
 
             $this->info('Posts fetched and stored successfully.');
         } else {

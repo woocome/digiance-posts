@@ -24,18 +24,20 @@ class PostsController extends Controller
         $perPage = $request->input('size', 12);
         $currentPage = $request->input('page', 1);
         $searchTerm = $request->input('search'); // Search term if provided
+        $cacheKey = 'posts_page_' . $currentPage . '_size_' . $perPage;
+        $hourInSeconds = 60 * 60;
 
-        $cacheKey = 'posts_page_' . $currentPage . '_size_' . $perPage . '_search_' . ($searchTerm ?: 'all');
-    
-        $paginatedPosts = Cache::remember($cacheKey, 60, function () use ($searchTerm, $perPage, $currentPage) {
+        $getPosts = function ($searchTerm = null) use ($perPage, $currentPage) {
             $query = Post::query();
-    
+
             if ($searchTerm) {
                 $query->where('title', 'like', '%' . $searchTerm . '%');
             }
 
             return $query->paginate(perPage: $perPage, page: $currentPage);
-        });
+        };
+
+        $paginatedPosts = $searchTerm ? $getPosts($searchTerm) : Cache::remember($cacheKey, $hourInSeconds, $getPosts);
 
         return PostResource::collection($paginatedPosts);
     }
